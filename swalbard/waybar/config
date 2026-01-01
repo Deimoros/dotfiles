@@ -2,7 +2,7 @@
 {
     // "layer": "top", // Waybar at top layer
     // "position": "bottom", // Waybar position (top|bottom|left|right)
-    "height": 30, // Waybar height (to be removed for auto height)
+    //"height": 30, // Waybar height (to be removed for auto height).
     // "width": 1280, // Waybar width
     "spacing": 4, // Gaps between modules (4px)
     // Choose the order of the modules
@@ -13,24 +13,26 @@
         "sway/media"
     ],
     "modules-center": [
-        "sway/window"
+        //"sway/window",
+        "clock"
     ],
     "modules-right": [
         //"mpd",
         //"idle_inhibitor",
         "pulseaudio",
-        "network",
+        "tray",
+        //"network",
         "power-profiles-daemon",
         "cpu",
         "memory",
         "temperature",
-        "backlight",
+        //"backlight",
         //"keyboard-state",
         //"sway/language",
         //"battery",
         //"battery#bat2",
-        "clock",
-        "tray",
+        //"clock",
+        "mpris",
         "custom/power"
     ],
     // Modules configuration
@@ -40,8 +42,8 @@
          "warp-on-scroll": false,
          "format": "{name}: {icon}",
          "format-icons": {
-             "1": "",
-             "2": "",
+             "1": "",
+             "2": "",
              "3": "",
              "4": "",
              "5": "",
@@ -112,8 +114,11 @@
     },
     "clock": {
         "timezone": "Europe/Stockholm",
+        "format": "{:%a %d %b %Y | %H:%M}",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "format-alt": "{:%Y-%m-%d}"
+        "format-alt": "{:%Y-%m-%d %H:%M:%S}"
+        //"tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        //"format-alt": "{:%Y-%m-%d}"
     },
     "cpu": {
         "format": "{usage}% ",
@@ -204,6 +209,24 @@
         "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
         // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
     },
+
+    "mpris": {
+        "format": "{player_icon} {status}",
+        "format-paused": "{player_icon} ",
+        "format-playing": "{player_icon} ",
+        "player-icons": {
+            "spotify": "",
+            "vlc": "󰕼",
+            "default": ""
+        },
+        "status-icons": {
+            "playing": "",
+            "paused": "",
+            "stopped": ""
+        },
+        "tooltip-format": "{title} — {artist}"
+    },
+
     "custom/power": {
         "format" : "⏻ ",
 		"tooltip": false,
