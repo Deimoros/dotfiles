@@ -4,6 +4,8 @@
 #
 # Read `man 5 sway` for a complete reference.
 
+include /home/olle/.cache/wal/colors-sway
+
 
 for_window [title="kitty"] opacity 0.90
 
@@ -277,6 +279,9 @@ bindsym $mod+Shift+p exec bash -lc "$HOME/.local/bin/wallpaper-chooser.sh"
 #client.focused_inactive #222222 #444444 #cccccc #ff0000 #00ff00
 #client.unfocused        #333333 #111111 #888888 #ff0000 #00ff00
 #client.urgent           #ff0000 #222222 #ffffff #ff0000 #00ff00
+
+#client.focused #4444ff #222222 #ffffff #ff0000 #00ff00
+client.focused $color0 $color2 $color7 $color3 $color4
 
 # Rounded corners in pixels
 #for_window [con_id=__focused__] border_radius 10
