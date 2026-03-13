@@ -9,7 +9,10 @@ echo "$HOME/Pictures/swaywallpapers"
 WALLPAPER_DIR="$HOME/Pictures/swaywallpapers"
 TARGET="$HOME/Pictures/swaywallpapers/placeholder.png"
 
-choice=$(ls "$WALLPAPER_DIR" | wofi --dmenu --prompt "Wallpaper")
+#choice=$(ls "$WALLPAPER_DIR" | wofi --dmenu --prompt "Wallpaper")
+#choice=$(ls "$WALLPAPER_DIR" | fuzzel --dmenu --prompt "Wallpaper")
+#choice=$(ls "$WALLPAPER_DIR" | bemenu -p "Wallpaper")
+choice=$(ls "$WALLPAPER_DIR" | rofi -show-icons -dmenu -p "Wallpaper")
 
 cp "$WALLPAPER_DIR/$choice" "$TARGET"
 

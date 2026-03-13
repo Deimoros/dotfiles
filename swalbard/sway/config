@@ -258,7 +258,7 @@ gaps outer 15
 #bindsym $mod+Shift+Shift+g gaps inner current minus 5
 
 bindsym $mod+Shift+m exec swaymsg "exit"
-bindsym $mod+Shift+p exec bash -lc "$HOME/.local/bin/wallpaper-chooser.sh"
+bindsym $mod+Shift+p exec bash -lc "$HOME/.local/bin/wallpaper-chooser-icons.sh"
 #bindsym $mod+Shift+p exec /home/olle/.local/bin/wallpaper-chooser.sh
 
 
@@ -305,3 +305,5 @@ client.focused $color0 $color2 $color7 $color3 $color4
 #}
 
 include /etc/sway/config.d/*
+
+exec swaymsg reload
