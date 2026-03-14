@@ -17,14 +17,75 @@ done
 #-theme-str 'listview {columns: 4; lines: 3;} element-icon {size: 160px;}' \
 #-p "Wallpaper")
 
+BG=$(sed -n '1p' ~/.cache/wal/colors)
+FG=$(sed -n '8p' ~/.cache/wal/colors)
+SEL=$(sed -n '2p' ~/.cache/wal/colors)
+
 choice=$(printf "%b" "$menu" | rofi -dmenu -show-icons \
--theme-str '
+-theme ~/.cache/wal/colors-rofi-light.rasi \
+-theme-str "
 listview {columns: 5; lines: 3; spacing: 12px;}
 element {orientation: vertical;}
 element-icon {size: 220px;}
 element-text {horizontal-align: 0.5;}
-' \
+#element-selected { background-color: $SEL; text-color: $FG;}
+#window {background-color: ${BG}cc; border:0;}
+" \
 -p "Wallpaper")
+
+
+#choice=$(printf "%b" "$menu" | rofi -dmenu -show-icons \
+#-theme ~/.cache/wal/colors-rofi-light.rasi \
+#-theme-str "
+#listview {columns: 5; lines: 3; spacing: 12px;}
+#element {orientation: vertical;}
+#element-icon {size: 220px;}
+#element-text {horizontal-align: 0.5;}
+#element selected { background-color: $SEL;text-color: $FG; }
+#window {background-color: ${BG};border: 2px solid $SEL;}
+#" \
+#-p "Wallpaper")
+
+
+#BG=$(sed -n '1p' ~/.cache/wal/colors | tr -d '\r\n[:space:]')
+#SEL=$(sed -n '2p' ~/.cache/wal/colors | tr -d '\r\n[:space:]')
+#FG=$(sed -n '8p' ~/.cache/wal/colors | tr -d '\r\n[:space:]')
+
+#choice=$(printf "%b" "$menu" | rofi -dmenu -show-icons \
+#-theme ~/.cache/wal/colors-rofi-light.rasi \
+#-theme-str "$(cat <<EOF
+#listview { columns: 5; lines: 3; spacing: 12px; }
+#element { orientation: vertical; }
+#element-icon { size: 220px; }
+#element-text { horizontal-align: 0.5; }
+#element selected { background-color: ${SEL}; text-color: ${FG}; }
+#window { background-color: ${BG}; border: 2px solid ${SEL}; }
+#EOF
+#)" \
+#-p "Wallpaper")
+
+
+
+#choice=$(printf "%b" "$menu" | rofi -dmenu -show-icons \
+#-theme-str "
+#listview { columns: 5; lines: 3; spacing: 12px; }
+#element { orientation: vertical; padding: 6px; background-color: transparent; }
+#element-icon { size: 220px; }
+#element-text { horizontal-align: 0.5; }
+#element selected { background-color: $SEL; text-color: $FG; }
+#window { background-color: $BG; border: 2px solid $SEL; }
+#" \
+#-p "Wallpaper")
+
+
+#choice=$(printf "%b" "$menu" | rofi -dmenu -show-icons \
+#-theme ~/.config/rofi/wallpaper-picker.rasi \
+#-p "Wallpaper")
+
+#choice=$(printf "%b" "$menu" | rofi -dmenu -show-icons \
+#-theme ~/.cache/wal/colors-rofi-light.rasi \
+#-p "Wallpaper")
+
 
 
 [ -z "$choice" ] && exit 0
