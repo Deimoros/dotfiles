@@ -1,0 +1,559 @@
+# Swalbard Setup
+
+**Swalbard = Sway + Pywal**
+
+This guide explains how to set up the Swalbard desktop configuration on a new Linux installation.
+
+Swalbard is primarily intended for **Arch Linux / CachyOS**. The configuration is intentionally not completely automated because different machines have different hardware, monitors, input devices, GPUs and other requirements.
+
+The goal is to reproduce the Swalbard environment while keeping hardware-specific configuration manual.
+
+---
+
+# 1. Clone the repository
+
+Clone the dotfiles repository into your home directory:
+
+```bash
+git clone git@github.com:owlnx/dotfiles.git ~/dotfiles
+```
+
+The Swalbard configuration is located at:
+
+```text
+~/dotfiles/swalbard/
+```
+
+---
+
+# 2. Install required packages
+
+For Arch Linux / CachyOS, install the main Swalbard dependencies:
+
+```bash
+sudo pacman -S --needed \
+    sway \
+    waybar \
+    kitty \
+    wofi \
+    rofi \
+    swaybg \
+    python-pywal \
+    bluez \
+    bluez-utils \
+    blueman \
+    pipewire \
+    pipewire-pulse \
+    wireplumber \
+    pavucontrol \
+    brightnessctl \
+    grim \
+    slurp \
+    power-profiles-daemon \
+    git
+```
+
+### Package overview
+
+| Package | Purpose |
+|---|---|
+| `sway` | Wayland window manager |
+| `waybar` | Status bar |
+| `kitty` | Terminal |
+| `wofi` | Application launcher |
+| `rofi` | Launcher / utilities |
+| `swaybg` | Wallpaper |
+| `python-pywal` | Dynamic color generation |
+| `bluez` | Bluetooth stack |
+| `bluez-utils` | Bluetooth utilities |
+| `blueman` | Bluetooth GUI / applet |
+| `pipewire` | Audio/video server |
+| `pipewire-pulse` | PulseAudio compatibility |
+| `wireplumber` | PipeWire session manager |
+| `pavucontrol` | Graphical audio mixer |
+| `brightnessctl` | Brightness control |
+| `grim` | Screenshot utility |
+| `slurp` | Select an area for screenshots |
+| `power-profiles-daemon` | Power profile management |
+| `git` | Version control |
+
+If you already have some of these packages installed, `--needed` prevents pacman from reinstalling them unnecessarily.
+
+---
+
+# 3. Enable required services
+
+### Bluetooth
+
+If Bluetooth is used on the machine:
+
+```bash
+sudo systemctl enable --now bluetooth.service
+```
+
+Check the service:
+
+```bash
+systemctl status bluetooth
+```
+
+The `blueman` applet can be started with:
+
+```bash
+blueman-applet
+```
+
+### Power profiles
+
+For laptop power management:
+
+```bash
+sudo systemctl enable --now power-profiles-daemon.service
+```
+
+Check it with:
+
+```bash
+systemctl status power-profiles-daemon
+```
+
+---
+
+# 4. Create configuration directories
+
+Create the directories used by Swalbard:
+
+```bash
+mkdir -p ~/.config/sway
+mkdir -p ~/.config/waybar
+mkdir -p ~/.config/kitty
+```
+
+---
+
+# 5. Install the Sway configuration
+
+There are two options.
+
+## 5a. Standard Sway configuration
+
+If you want to start with Sway's default configuration:
+
+```bash
+cp /etc/sway/config ~/.config/sway/config
+```
+
+This gives you a clean standard Sway configuration that can then be customized manually.
+
+---
+
+## 5b. Swalbard configuration
+
+To use the custom Swalbard configuration:
+
+```bash
+cp ~/dotfiles/swalbard/sway/config ~/.config/sway/config
+```
+
+> **Important:** The Swalbard configuration contains some machine-specific settings. Review it before starting Sway on a new machine.
+
+---
+
+# 6. Check monitor configuration
+
+Monitor names and available resolutions are hardware-specific.
+
+From an existing Sway session, run:
+
+```bash
+swaymsg -t get_outputs
+```
+
+For example:
+
+```text
+Output DP-1
+  Current mode: 2560x1440 @ 240.000 Hz
+
+Output HDMI-A-1
+  Current mode: 1920x1080 @ 60.000 Hz
+```
+
+The output names (`DP-1`, `HDMI-A-1`, etc.) may be different on every machine.
+
+Update the `output` commands in:
+
+```text
+~/.config/sway/config
+```
+
+accordingly.
+
+---
+
+# 7. Install and configure Pywal
+
+Pywal generates a color palette from an image and makes the colors available to applications such as Sway and Kitty.
+
+Pywal was already installed in step 2:
+
+```bash
+sudo pacman -S --needed python-pywal
+```
+
+Check that it is available:
+
+```bash
+wal --version
+```
+
+---
+
+## 7a. Generate the initial color scheme
+
+Choose an image to use as the initial wallpaper.
+
+For example:
+
+```text
+~/Pictures/aurora.png
+```
+
+Generate the color scheme:
+
+```bash
+wal -i ~/Pictures/aurora.png -n
+```
+
+Pywal generates its files in:
+
+```text
+~/.cache/wal/
+```
+
+Important files include:
+
+```text
+~/.cache/wal/colors
+~/.cache/wal/colors-sway
+~/.cache/wal/colors-kitty.conf
+```
+
+Make sure the image exists:
+
+```bash
+ls ~/Pictures/aurora.png
+```
+
+You can use any image instead.
+
+---
+
+# 8. Start Pywal automatically with Sway
+
+Add the following to:
+
+```text
+~/.config/sway/config
+```
+
+```text
+exec wal -i ~/Pictures/aurora.png -n
+```
+
+This causes Pywal to generate the color scheme when Sway starts.
+
+If you use a different wallpaper, change the path accordingly.
+
+For example:
+
+```text
+exec wal -i ~/Pictures/my-wallpaper.png -n
+```
+
+---
+
+# 9. Configure Kitty
+
+If Kitty is used as the terminal, it can use the color palette generated by Pywal.
+
+Open the Kitty configuration:
+
+```bash
+nano ~/.config/kitty/kitty.conf
+```
+
+Add:
+
+```text
+include ~/.cache/wal/colors-kitty.conf
+```
+
+Kitty will now use the colors generated by Pywal.
+
+You can regenerate the colors at any time with:
+
+```bash
+wal -i ~/Pictures/aurora.png
+```
+
+---
+
+# 10. Install the Waybar configuration
+
+Waybar is used as the status bar in Swalbard.
+
+The package was installed in step 2.
+
+Copy the Swalbard configuration:
+
+```bash
+cp ~/dotfiles/swalbard/waybar/config ~/.config/waybar/config
+cp ~/dotfiles/swalbard/waybar/style.css ~/.config/waybar/style.css
+```
+
+The Sway configuration should start Waybar automatically.
+
+You can also test Waybar manually:
+
+```bash
+waybar
+```
+
+If Waybar produces errors, running it manually from a terminal is useful for troubleshooting.
+
+---
+
+# 11. Audio
+
+Swalbard uses PipeWire for audio.
+
+The required packages were installed in step 2:
+
+```text
+pipewire
+pipewire-pulse
+wireplumber
+pavucontrol
+```
+
+Check PipeWire:
+
+```bash
+systemctl --user status pipewire
+```
+
+Check WirePlumber:
+
+```bash
+systemctl --user status wireplumber
+```
+
+Open the graphical audio mixer:
+
+```bash
+pavucontrol
+```
+
+---
+
+# 12. Test the Sway configuration
+
+Before logging into Sway, check the configuration for errors:
+
+```bash
+sway -C
+```
+
+If the configuration is valid, Sway should report no configuration errors.
+
+If something goes wrong when starting Sway, running Sway from a TTY can make debugging easier.
+
+---
+
+# 13. Machine-specific configuration
+
+The same Swalbard configuration can be used on multiple machines, but hardware-specific settings may need to be changed.
+
+Before using the configuration on a new machine, check:
+
+```text
+Monitor/output names
+Monitor resolutions
+Monitor refresh rates
+Keyboard layout
+Input devices
+Touchpad settings
+Audio devices
+GPU-specific settings
+Wallpaper paths
+```
+
+Useful commands include:
+
+### Monitors
+
+```bash
+swaymsg -t get_outputs
+```
+
+### Input devices
+
+```bash
+swaymsg -t get_inputs
+```
+
+### Bluetooth
+
+```bash
+systemctl status bluetooth
+```
+
+### Audio
+
+```bash
+pavucontrol
+```
+
+---
+
+# 14. Updating the dotfiles
+
+If the configuration was copied from the repository, changes made to the Git repository will not automatically update the configuration in `~/.config`.
+
+Pull the latest version:
+
+```bash
+cd ~/dotfiles
+git pull
+```
+
+Then copy the relevant configuration again.
+
+For example:
+
+```bash
+cp ~/dotfiles/swalbard/sway/config ~/.config/sway/config
+```
+
+And for Waybar:
+
+```bash
+cp ~/dotfiles/swalbard/waybar/config ~/.config/waybar/config
+cp ~/dotfiles/swalbard/waybar/style.css ~/.config/waybar/style.css
+```
+
+---
+
+# 15. Optional: use symlinks instead of copying
+
+For a machine that will permanently use Swalbard, symlinks are recommended.
+
+Instead of copying the configuration files, link the directories directly to the Git repository:
+
+```bash
+ln -sfn ~/dotfiles/swalbard/sway ~/.config/sway
+ln -sfn ~/dotfiles/swalbard/waybar ~/.config/waybar
+```
+
+Then the configuration in `~/.config` points directly to the repository.
+
+After updating the repository:
+
+```bash
+cd ~/dotfiles
+git pull
+```
+
+the updated configuration is immediately available.
+
+### Why use symlinks?
+
+Without symlinks:
+
+```text
+Git repository
+      ↓
+     copy
+      ↓
+~/.config/sway
+```
+
+You have to copy the files again after every update.
+
+With symlinks:
+
+```text
+Git repository
+      ↓
+    symlink
+      ↓
+~/.config/sway
+```
+
+The live configuration always points to the Git repository.
+
+> **Note:** If using symlinks, make sure you do not already have important configuration files in `~/.config/sway` or `~/.config/waybar`, as replacing them may remove your existing configuration.
+
+---
+
+# 16. New machine checklist
+
+- [ ] Install Arch/CachyOS
+- [ ] Clone `dotfiles`
+- [ ] Install required packages
+- [ ] Enable Bluetooth if required
+- [ ] Enable power-profiles-daemon if required
+- [ ] Create configuration directories
+- [ ] Install Sway configuration
+- [ ] Check monitor names with `swaymsg -t get_outputs`
+- [ ] Adjust machine-specific Sway settings
+- [ ] Install/configure Pywal
+- [ ] Generate initial Pywal theme
+- [ ] Configure Kitty
+- [ ] Install/configure Waybar
+- [ ] Configure PipeWire/audio
+- [ ] Run `sway -C`
+- [ ] Start Sway
+- [ ] Test keyboard shortcuts
+- [ ] Test Waybar
+- [ ] Test wallpaper/Pywal
+- [ ] Test Kitty colors
+- [ ] Test audio
+- [ ] Test Bluetooth
+- [ ] Test brightness
+- [ ] Test screenshots
+
+---
+
+# Notes
+
+Swalbard is built around:
+
+```text
+Sway
+  +
+Pywal
+  +
+Waybar
+  +
+Kitty
+```
+
+The purpose of this repository is to make the **software environment and workflow reproducible**, while leaving hardware-specific decisions to the user.
+
+A new machine should therefore not necessarily be configured identically to the old machine.
+
+The first things to check on new hardware are:
+
+```text
+Monitor/output names
+Monitor resolution and refresh rate
+Keyboard/input configuration
+Touchpad configuration
+Audio devices
+GPU-specific settings
+Wallpaper paths
+```
+
+**Swalbard — Sway + Pywal**
